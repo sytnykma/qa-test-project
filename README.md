@@ -45,7 +45,7 @@ npm (comes bundled with Node.js)
 git clone <your-repository-url>
 cd <project-folder>
 
-# Install dependencies
+# Install dependencies (this will also install Playwright and necessary TypeScript types for Node.js like @types/node)
 npm install
 
 3. Install Playwright Browsers

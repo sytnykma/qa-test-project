@@ -1,15 +1,12 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
+import { test, expect } from './fixtures';
 
 test.describe('Module 1 - Authentication & UI Settings', () => {
-  let loginPage: LoginPage;
 
-  test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
+  test.beforeEach(async ({ loginPage }) => {
     await loginPage.goto();
   });
 
-  test('TS-01 & TS-03: Should successfully create account and login', async ({ page }) => {
+  test('TS-02: Authentication – Successful Registration & Login', async ({ loginPage }) => {
     const uniqueUser = `TestUser_${Date.now()}`;
     
     // Perform registration / login
@@ -19,7 +16,7 @@ test.describe('Module 1 - Authentication & UI Settings', () => {
     await expect(loginPage.usernameInput).not.toBeVisible({ timeout: 5000 });
   });
 
-  test('TS-06: Should toggle theme between light and dark', async ({ page }) => {
+  test('TS-03: UI – Theme Switcher Functionality', async ({ page, loginPage }) => {
     const htmlTag = page.locator('html');
     await expect(htmlTag).toHaveAttribute('data-theme', 'light');
     
@@ -27,7 +24,7 @@ test.describe('Module 1 - Authentication & UI Settings', () => {
     await expect(htmlTag).toHaveAttribute('data-theme', 'dark');
   });
 
-  test('TS-07: Should switch language to Persian and update direction to RTL', async ({ page }) => {
+  test('TS-04: UI – Language Switcher (English to Persian / RTL Layout)', async ({ page, loginPage }) => {
     const htmlTag = page.locator('html');
     
     await loginPage.setLanguage('fa');

@@ -10,7 +10,7 @@ test.describe('Module 2 - Gameplay & Game Logic', () => {
     await expect(gamePage.cells.first()).toBeVisible({ timeout: 5000 });
   });
 
-  test('TS-06: Gameplay – Board Interaction (Human player should be able to make moves in all available cells)', async ({ page, gamePage }) => {
+  test('GAME-08: Board Interaction – Cell Clickability/Input Validation', async ({ page, gamePage }) => {
     for (let i = 0; i < 9; i++) {
       await gamePage.clickCell(i);
       await gamePage.waitForCellText(i, 'x'); 
@@ -27,7 +27,7 @@ test.describe('Module 2 - Gameplay & Game Logic', () => {
     }
   });
 
-  test('TS-09: Game Settings – Difficulty Selection & History Update', async ({ page, gamePage }) => {
+  test('GAME-04: Game Settings – Difficulty Selection', async ({ page, gamePage }) => {
     const difficulties = ['Easy', 'Medium', 'Hard'];
 
     for (const level of difficulties) {
@@ -38,7 +38,7 @@ test.describe('Module 2 - Gameplay & Game Logic', () => {
     }
   });
 
-  test('TS-10: Game Logic – Move Validation & Occupied Cells (Defect Check)', async ({ gameTestService }) => {
+  test('GAME-05: Game Logic – Move Validation & Occupied Cells (Defect Check)', async ({ gameTestService }) => {
     const bugReports = await gameTestService.checkNoCellOverwriteOnHard();
 
     if (bugReports.length > 0) {
@@ -47,7 +47,7 @@ test.describe('Module 2 - Gameplay & Game Logic', () => {
     }
   });
 
-  test('TS-11: Game Logic – Hint System Validation (Defect Check)', async ({ gameTestService }) => {
+  test('GAME-06: Game Logic – Hint System Validation (Defect Check)', async ({ gameTestService }) => {
     const bugReports = await gameTestService.checkHintDoesNotHighlightOccupiedCells();
 
     if (bugReports.length > 0) {

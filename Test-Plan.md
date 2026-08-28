@@ -61,7 +61,7 @@ The following artifacts will be delivered upon the completion of the testing pha
 2. **Test Cases:** Detailed step-by-step execution guides.
 3. **Automated Test Suite:** Playwright E2E automation scripts covering the critical paths.
 4. **Test Execution Report:** Playwright HTML report outlining pass/fail rates.
-5. **Defect Log:** Detailed traces of identified bugs (e.g., TS-10, TS-11).
+5. **Defect Log:** Detailed traces of identified bugs (e.g., GAME-05, GAME-06).
 
 ## 7. Risks and Mitigations
 - **Risk:** Automated UI tests may be flaky due to asynchronous DOM updates (e.g., waiting for computer turn).

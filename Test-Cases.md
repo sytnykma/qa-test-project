@@ -1,8 +1,8 @@
 # Test Cases: Tic-Tac-Toe Application
 
-## Module 1 – Authentication & UI Elements
+## Block 1: LOGIN (Authentication & UI Elements)
 
-**TS-01: Authentication – Failed Login / Input Validation**
+**LOGIN-01: Failed Login / Input Validation**
 * **Priority:** High
 * **Test Type:** Functional, Negative
 * **Preconditions:** The user is on the landing/login page. No user is currently logged in.
@@ -15,7 +15,7 @@
 * **Expected Result:** Form submission is prevented for the empty input. For the non-existent user, login is blocked and an appropriate error message is displayed.
 * **Post-conditions:** User remains on the login page unauthenticated.
 
-**TS-02: Authentication – Successful Registration & Login**
+**LOGIN-02: Successful Registration & Login**
 * **Priority:** Critical
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is on the landing/login page. No user is currently logged in.
@@ -28,7 +28,7 @@
 * **Expected Result:** Account is created successfully. Login succeeds, and the user is redirected to the main game board page.
 * **Post-conditions:** A user session is established and active.
 
-**TS-03: UI – Theme Switcher Functionality**
+**LOGIN-03: UI – Theme Switcher Functionality**
 * **Priority:** Low
 * **Test Type:** UI, Positive
 * **Preconditions:** The user is on the landing page.
@@ -39,7 +39,7 @@
 * **Expected Result:** The `data-theme` attribute on the `<html>` tag changes to `dark`, and the visual color scheme switches to Dark mode. Clicking again reverts it back to Light mode.
 * **Post-conditions:** Theme preference is applied dynamically.
 
-**TS-04: UI – Language Switcher (English to Persian / RTL Layout)**
+**LOGIN-04: UI – Language Switcher (English to Persian / RTL Layout)**
 * **Priority:** Medium
 * **Test Type:** UI / Localization, Positive
 * **Preconditions:** The user is on the landing page in English.
@@ -50,7 +50,7 @@
 * **Expected Result:** Page labels translate to Persian, and text direction updates to RTL. Reverting to English restores labels and LTR layout.
 * **Post-conditions:** Language and layout return to default.
 
-**TS-05: UI – Keyboard Navigation (Accessibility)**
+**LOGIN-05: UI – Keyboard Navigation (Accessibility)**
 * **Priority:** Medium
 * **Test Type:** Accessibility, Positive
 * **Preconditions:** The user is on the landing page.
@@ -63,9 +63,9 @@
 
 ---
 
-## Module 2 – Gameplay, Settings & Match History
+## Block 2: GAME (Gameplay & Settings)
 
-**TS-06: Gameplay – Human Victory**
+**GAME-01: Gameplay – Human Victory**
 * **Priority:** Critical
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in with a valid account and is on the game board.
@@ -75,7 +75,7 @@
 * **Expected Result:** The game stops accepting input, the winning line is highlighted, and the status indicates a human victory.
 * **Post-conditions:** Match result (Win) is saved to history.
 
-**TS-07: Gameplay – Computer Player Victory**
+**GAME-02: Gameplay – Computer Player Victory**
 * **Priority:** High
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in and starts a new game.
@@ -85,7 +85,7 @@
 * **Expected Result:** The game stops, the computer's winning line is highlighted, and the status indicates a computer victory.
 * **Post-conditions:** Match result (Loss) is saved to history.
 
-**TS-08: Gameplay – Draw Condition**
+**GAME-03: Gameplay – Draw Condition**
 * **Priority:** High
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in and starts a new game.
@@ -95,18 +95,16 @@
 * **Expected Result:** The game stops, no cells are highlighted as winning, and the status indicates a draw.
 * **Post-conditions:** Match result (Draw) is saved to history.
 
-**TS-09: Game Settings – Difficulty Selection & History Update**
+**GAME-04: Game Settings – Difficulty Selection**
 * **Priority:** Medium
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in.
 * **Steps:**
-  1. Select "Hard" from the difficulty dropdown menu.
-  2. Complete a full game (Win, Loss, or Draw).
-  3. Scroll down to the Match History table.
-* **Expected Result:** The Match History table displays a new row with the difficulty specifically recorded as "Hard", and the correct match result.
+  1. Select "Easy", "Medium", and "Hard" sequentially from the difficulty dropdown menu.
+* **Expected Result:** The dropdown updates properly to reflect the user's choice.
 * **Post-conditions:** State of difficulty is retained for the current session.
 
-**TS-10: Game Logic – Move Validation & Occupied Cells (Defect Check)**
+**GAME-05: Game Logic – Move Validation & Occupied Cells (Defect Check)**
 * **Priority:** High
 * **Test Type:** Functional, Negative
 * **Preconditions:** The user is logged in and the difficulty is "Hard".
@@ -117,7 +115,7 @@
 * **Expected Result:** Neither player can place a mark in a cell that already contains an 'x' or 'o'. *(Note: Expected to fail for the computer player due to a known defect on Hard difficulty).*
 * **Post-conditions:** Game continues without state corruption.
 
-**TS-11: Game Logic – Hint System Validation (Defect Check)**
+**GAME-06: Game Logic – Hint System Validation (Defect Check)**
 * **Priority:** Medium
 * **Test Type:** Functional, Negative
 * **Preconditions:** The user is logged in and a game is in progress.
@@ -127,7 +125,7 @@
 * **Expected Result:** The hint system must strictly highlight (pulse) an empty, playable cell. *(Note: Expected to fail due to a known defect where hints highlight occupied cells).*
 * **Post-conditions:** Board state remains unchanged after hint request.
 
-**TS-12: Session Management – Logout Functionality**
+**GAME-07: Session Management – Logout Functionality**
 * **Priority:** High
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in and on the game board view.
@@ -136,11 +134,24 @@
 * **Expected Result:** The user session ends, the application redirects to the Authentication view, and the game board is hidden.
 * **Post-conditions:** Session token/data is cleared.
 
+**GAME-08: Board Interaction – Cell Clickability/Input Validation**
+* **Priority:** High
+* **Test Type:** Functional, Positive
+* **Preconditions:** The user is logged in and a new game is started.
+* **Steps:**
+  1. For each of the 9 cells on the board:
+     a. Click the empty cell.
+     b. Verify the cell registers an 'x' mark.
+     c. Reset the board.
+     d. Verify the cell is empty again.
+* **Expected Result:** The user can successfully place a mark in any available cell, and the reset function properly clears the board state.
+* **Post-conditions:** The board is completely cleared and ready for a new game.
+
 ---
 
-## Module 3 – Profile & History Tabs
+## Block 3: PROFILE (Profile & History Tabs)
 
-**TS-13: Profile – Victory Statistics Verification per Difficulty**
+**PROFILE-01: Profile – Victory Statistics Verification per Difficulty**
 * **Priority:** High
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in and has completed multiple matches on different difficulties.
@@ -150,7 +161,7 @@
 * **Expected Result:** The statistics counters accurately reflect the actual number of wins, losses, and draws achieved on each level.
 * **Post-conditions:** Statistics remain persistent.
 
-**TS-14: Profile – Username Update and Subsequent Login**
+**PROFILE-02: Profile – Username Update and Subsequent Login**
 * **Priority:** Medium
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in.
@@ -164,7 +175,7 @@
 * **Expected Result:** Login with the old username fails. Login with the new username succeeds.
 * **Post-conditions:** Account is bound to the new username.
 
-**TS-15: Profile – Account Deletion and Clean Re-registration**
+**PROFILE-03: Profile – Account Deletion and Clean Re-registration**
 * **Priority:** High
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in and has a populated history and statistics.
@@ -176,7 +187,7 @@
 * **Expected Result:** Account creation is permitted. Profile statistics and Match History log are completely empty (reset state).
 * **Post-conditions:** Previous data is unrecoverable.
 
-**TS-16: History Tab – Comprehensive Game Records Display**
+**PROFILE-04: History Tab – Comprehensive Game Records Display**
 * **Priority:** Medium
 * **Test Type:** Functional, Positive
 * **Preconditions:** The user is logged in and has completed at least 3 games.
@@ -185,3 +196,14 @@
   2. Inspect the records displayed.
 * **Expected Result:** All completed games are listed chronologically, showing accurate match timestamp, difficulty level, and game outcome.
 * **Post-conditions:** The view does not alter the underlying data.
+
+**PROFILE-05: Match History – Difficulty Recording**
+* **Priority:** Medium
+* **Test Type:** Functional, Positive
+* **Preconditions:** The user is logged in.
+* **Steps:**
+  1. Select "Hard" from the difficulty dropdown menu.
+  2. Complete a full game (Win, Loss, or Draw).
+  3. Scroll down to the Match History table.
+* **Expected Result:** The Match History table displays a new row with the difficulty specifically recorded as "Hard".
+* **Post-conditions:** State of difficulty is retained for the current session.

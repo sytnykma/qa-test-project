@@ -61,6 +61,26 @@
 * **Expected Result:** All UI elements are accessible via keyboard. Focus outlines are clearly visible, and pressing Enter attempts form submission.
 * **Post-conditions:** Focus state is maintained and handled properly.
 
+**LOGIN-06: Registration – Duplicate Username Prevention**
+* **Priority:** High
+* **Test Type:** Functional, Negative
+* **Preconditions:** The user is on the landing/login page. A user with the name "Player_New" already exists.
+* **Test Data:** Username = `"Player_New"`
+* **Steps:**
+  1. Enter the username "Player_New".
+  2. Click the "Create Account" button.
+* **Expected Result:** Account creation fails, and an appropriate error message is displayed indicating the username is taken.
+* **Post-conditions:** User remains on the login page unauthenticated.
+
+**LOGIN-07: Session Management – Persistence on Page Reload**
+* **Priority:** High
+* **Test Type:** Functional, Positive
+* **Preconditions:** The user is logged in and on the game board.
+* **Steps:**
+  1. Reload the page (F5 or browser refresh).
+* **Expected Result:** The user remains logged in and does not need to re-authenticate. The game board is displayed.
+* **Post-conditions:** Session persists.
+
 ---
 
 ## Block 2: GAME (Gameplay & Settings)
@@ -147,6 +167,27 @@
 * **Expected Result:** The user can successfully place a mark in any available cell, and the reset function properly clears the board state.
 * **Post-conditions:** The board is completely cleared and ready for a new game.
 
+**GAME-09: Game State – Board Freeze After Game Over**
+* **Priority:** High
+* **Test Type:** Functional, Negative
+* **Preconditions:** The user is logged in.
+* **Steps:**
+  1. Complete a game so that a Win or Draw condition is met.
+  2. Attempt to click on any remaining empty cells on the board.
+* **Expected Result:** The empty cells do not accept input. No new marks ('x' or 'o') appear on the board.
+* **Post-conditions:** Game state remains locked until Reset is clicked.
+
+**GAME-10: Game State – Mid-game Reset Functionality & History Isolation**
+* **Priority:** Medium
+* **Test Type:** Functional, Positive
+* **Preconditions:** The user is logged in and starts a new game.
+* **Steps:**
+  1. Make 1 or 2 moves (do not complete the game).
+  2. Click the "Reset" button.
+  3. Navigate to the "History" tab.
+* **Expected Result:** The board is cleared immediately. The aborted game is NOT recorded in the Match History or Statistics.
+* **Post-conditions:** Board state is clean; statistics are unaffected.
+
 ---
 
 ## Block 3: PROFILE (Profile & History Tabs)
@@ -207,3 +248,13 @@
   3. Scroll down to the Match History table.
 * **Expected Result:** The Match History table displays a new row with the difficulty specifically recorded as "Hard".
 * **Post-conditions:** State of difficulty is retained for the current session.
+
+**PROFILE-06: UI – Mobile Responsiveness (Viewport < 768px)**
+* **Priority:** Medium
+* **Test Type:** UI, Positive
+* **Preconditions:** The user is logged in.
+* **Steps:**
+  1. Resize the browser window to a mobile viewport width (e.g., 375px).
+  2. Navigate through the Game board and Profile tabs.
+* **Expected Result:** The game grid scales down proportionally without horizontal scrolling. UI elements (like tabs and tables) adapt to the smaller screen (e.g., stacking or scrolling natively).
+* **Post-conditions:** Layout adapts seamlessly.

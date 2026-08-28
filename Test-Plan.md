@@ -4,9 +4,8 @@
 Ensure the critical user journeys of the Tic-Tac-Toe application function correctly. The primary focus is on user authentication, core gameplay mechanics, match history tracking, as well as UI/UX components and localization.
 
 ## 2. Test Environment
-- **Platform:** Web Browsers (Google Chrome, Mozilla Firefox, Apple Safari)
+- **Platform:** Web Browser (Google Chrome only)
 - **Devices:** Desktop and Mobile responsiveness (Viewport width >= 320px)
-- **OS:** Cross-platform (Windows, macOS, iOS, Android)
 
 ## 3. Entry and Exit Criteria
 - **Entry Criteria:** 

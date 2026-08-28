@@ -8,36 +8,112 @@ export class TicTacToeBot {
   ];
 
   /**
-   * Calculates the best next move for the Human player ('x').
-   * Uses startOffset to dynamically vary the move sequence across different starting games.
+   * Calculates the optimal next move for a given player using Minimax.
+   * player: 'x' or 'o'
    */
-  static getBestMove(boardState: string[], startOffset: number = 0): number {
-    const findWinningCell = (mark: string) => {
-      for (const [a, b, c] of this.winLines) {
-        if (boardState[a] === mark && boardState[b] === mark && boardState[c] === '') return c;
-        if (boardState[a] === mark && boardState[c] === mark && boardState[b] === '') return b;
-        if (boardState[b] === mark && boardState[c] === mark && boardState[a] === '') return a;
-      }
-      return -1;
-    };
-
-    // Priority 1: Instant Win for Human ('x')
-    let move = findWinningCell('x');
-    if (move !== -1) return move;
-
-    // Priority 2: Block Computer's instant win ('o')
-    move = findWinningCell('o');
-    if (move !== -1) return move;
-
-    // Priority 3: Dynamic Search - scan empty cells starting sequentially from startOffset
+  static getOptimalMove(boardState: string[], player: 'x' | 'o'): number {
+    let bestScore = -Infinity;
+    let bestMove = -1;
     for (let i = 0; i < 9; i++) {
-      const candidateIndex = (startOffset + i) % 9;
-      if (boardState[candidateIndex] === '') {
-        return candidateIndex;
+      if (boardState[i] === '') {
+        boardState[i] = player;
+        let score = this.minimax(boardState, 0, false, player);
+        boardState[i] = '';
+        // Add a small random factor to tie-break equal scores for variety
+        if (score > bestScore || (score === bestScore && Math.random() > 0.5)) {
+          bestScore = score;
+          bestMove = i;
+        }
       }
     }
+    return bestMove;
+  }
 
-    return -1; // No empty cells left
+  /**
+   * Calculates the WORST next move for a given player using Minimax (to force a loss).
+   */
+  static getWorstMove(boardState: string[], player: 'x' | 'o'): number {
+    let worstScore = Infinity;
+    let worstMove = -1;
+    for (let i = 0; i < 9; i++) {
+      if (boardState[i] === '') {
+        boardState[i] = player;
+        let score = this.minimax(boardState, 0, false, player);
+        boardState[i] = '';
+        if (score < worstScore) {
+          worstScore = score;
+          worstMove = i;
+        }
+      }
+    }
+    return worstMove;
+  }
+
+  /**
+   * Calculates a move intended to force a DRAW (blocks opponent, avoids winning).
+   */
+  static getDrawMove(boardState: string[], player: 'x' | 'o'): number {
+    const opponent = player === 'x' ? 'o' : 'x';
+    
+    // 1. Must block opponent if they are about to win
+    for (let i = 0; i < 9; i++) {
+      if (boardState[i] === '') {
+        boardState[i] = opponent;
+        const wouldLose = this.getGameStatus(boardState) === opponent;
+        boardState[i] = '';
+        if (wouldLose) return i;
+      }
+    }
+    
+    // 2. Pick a move that does NOT win for us
+    for (let i = 0; i < 9; i++) {
+      if (boardState[i] === '') {
+        boardState[i] = player;
+        const wouldWin = this.getGameStatus(boardState) === player;
+        boardState[i] = '';
+        if (!wouldWin) return i;
+      }
+    }
+    
+    // 3. Fallback to any empty cell
+    for (let i = 0; i < 9; i++) {
+      if (boardState[i] === '') return i;
+    }
+    
+    return -1;
+  }
+
+  private static minimax(boardState: string[], depth: number, isMaximizing: boolean, aiPlayer: 'x' | 'o'): number {
+    const status = this.getGameStatus(boardState);
+    if (status === aiPlayer) return 10 - depth;
+    if (status !== null && status !== 'draw') return depth - 10;
+    if (status === 'draw') return 0;
+
+    const opponent = aiPlayer === 'x' ? 'o' : 'x';
+
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (boardState[i] === '') {
+          boardState[i] = aiPlayer;
+          let score = this.minimax(boardState, depth + 1, false, aiPlayer);
+          boardState[i] = '';
+          bestScore = Math.max(score, bestScore);
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (boardState[i] === '') {
+          boardState[i] = opponent;
+          let score = this.minimax(boardState, depth + 1, true, aiPlayer);
+          boardState[i] = '';
+          bestScore = Math.min(score, bestScore);
+        }
+      }
+      return bestScore;
+    }
   }
 
   /**

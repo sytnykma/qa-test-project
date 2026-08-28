@@ -6,8 +6,7 @@ export class GameTestService {
   constructor(private page: Page, private gamePage: GamePage) {}
 
   /**
-   * Encapsulated logic for TS-15:
-   * Runs 9 full games to check if computer overwrites human cells on Hard difficulty.
+   * Runs 9 full games to check if the computer overwrites human cells on Hard difficulty.
    */
   async checkNoCellOverwriteOnHard(): Promise<string[]> {
     const bugReports: string[] = [];
@@ -24,7 +23,7 @@ export class GameTestService {
         let boardState = await this.gamePage.getBoardState();
         if (TicTacToeBot.getGameStatus(boardState) !== null) break;
 
-        const nextMove = (turn === 0) ? startCell : TicTacToeBot.getBestMove(boardState, startCell);
+        const nextMove = (turn === 0) ? startCell : TicTacToeBot.getOptimalMove(boardState, 'x');
         if (nextMove === -1 || boardState[nextMove] !== '') break;
 
         await this.gamePage.clickCell(nextMove);
@@ -37,9 +36,7 @@ export class GameTestService {
         let postHumanBoardState = await this.gamePage.getBoardState();
         if (TicTacToeBot.getGameStatus(postHumanBoardState) !== null) break;
 
-        // Computer thinking wait (the app changes status or cell)
-        // A better approach is to wait until a new 'o' appears or status changes to human/draw/win
-        // The computer move can take up to 400ms (as simulated). Let's wait for any cell to turn 'o' that wasn't before
+        // Wait for computer move
         await this.waitForComputerMove(postHumanBoardState);
         
         const newBoardState = await this.gamePage.getBoardState();
@@ -69,8 +66,7 @@ export class GameTestService {
   }
 
   /**
-   * Encapsulated logic for TS-16:
-   * Runs 9 full games to check if Hint highlights already occupied cells.
+   * Runs 9 full games to check if the Hint system highlights already occupied cells.
    */
   async checkHintDoesNotHighlightOccupiedCells(): Promise<string[]> {
     const bugReports: string[] = [];
@@ -86,7 +82,6 @@ export class GameTestService {
         if (TicTacToeBot.getGameStatus(boardState) !== null) break;
 
         await this.gamePage.requestHint();
-        // Wait for hint animation class to appear on some cell
         await expect(this.gamePage.cells.locator('.is-hint, .hint').first()).toBeVisible({ timeout: 1000 }).catch(() => {});
         
         let hintedCellIndex = -1;
@@ -110,7 +105,7 @@ export class GameTestService {
           }
         }
 
-        const nextMove = (turn === 0) ? startCell : TicTacToeBot.getBestMove(boardState, startCell);
+        const nextMove = (turn === 0) ? startCell : TicTacToeBot.getOptimalMove(boardState, 'x');
         if (nextMove === -1 || boardState[nextMove] !== '') break;
 
         await this.gamePage.clickCell(nextMove);
@@ -138,7 +133,7 @@ export class GameTestService {
   /**
    * Helper to wait for the computer to make a move without using hard timeouts.
    */
-  private async waitForComputerMove(previousState: string[]) {
+  async waitForComputerMove(previousState: string[]) {
     // We wait until the board state has a new 'o' or the game ends (status becomes not computer-thinking)
     await expect(async () => {
       const currentState = await this.gamePage.getBoardState();
@@ -146,5 +141,65 @@ export class GameTestService {
       const isGameOver = TicTacToeBot.getGameStatus(currentState) !== null;
       expect(hasNewO || isGameOver).toBeTruthy();
     }).toPass({ timeout: 2000 });
+  }
+
+  /**
+   * Dynamically plays a game.
+   */
+  async playGameDynamically(difficulty: string, strategy: 'optimal' | 'worst' | 'draw'): Promise<'x' | 'o' | 'draw'> {
+    await this.gamePage.difficultySelect.selectOption({ label: difficulty });
+    await this.gamePage.resetBoard();
+    
+    for (let turn = 0; turn < 5; turn++) {
+      const boardState = await this.gamePage.getBoardState();
+      let move = -1;
+      if (strategy === 'optimal') move = TicTacToeBot.getOptimalMove(boardState, 'x');
+      else if (strategy === 'worst') move = TicTacToeBot.getWorstMove(boardState, 'x');
+      else if (strategy === 'draw') move = TicTacToeBot.getDrawMove(boardState, 'x');
+      
+      if (move === -1) break;
+      
+      await this.gamePage.clickCell(move);
+      await this.gamePage.waitForCellText(move, 'x');
+      
+      const postMoveState = await this.gamePage.getBoardState();
+      let status = TicTacToeBot.getGameStatus(postMoveState);
+      if (status !== null) return status;
+      
+      await this.waitForComputerMove(postMoveState);
+      
+      status = TicTacToeBot.getGameStatus(await this.gamePage.getBoardState());
+      if (status !== null) return status;
+    }
+    return 'draw'; // Fallback
+  }
+
+  /**
+   * Forces a deterministic draw against the 'Easy' bot by mocking Math.random
+   * and playing a specific sequence of moves.
+   */
+  async forceDraw() {
+    await this.gamePage.difficultySelect.selectOption({ label: 'Easy' });
+    await this.gamePage.resetBoard();
+    
+    // Mock random so 'Easy' bot plays exactly where we want
+    await this.gamePage.page.evaluate(() => {
+        const values = [0, 0.2, 0, 0];
+        let i = 0;
+        Math.random = () => i < values.length ? values[i++] : 0;
+    });
+
+    const play = async (cell: number) => {
+        await this.gamePage.clickCell(cell);
+        await this.gamePage.waitForCellText(cell, 'x');
+        await this.gamePage.page.waitForTimeout(500); // Wait for bot to reply
+    };
+
+    // The forced sequence
+    await play(1);
+    await play(2);
+    await play(3);
+    await play(7);
+    await play(8);
   }
 }

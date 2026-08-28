@@ -10,16 +10,21 @@ export class LoginPage {
   readonly createAccountButton: Locator;
   readonly themeButton: Locator;
   readonly languageSelect: Locator;
+  readonly errorMessage: Locator;
+  readonly toggleModeButton: Locator;
+  readonly logoutButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
     
-    // Improved robust locators
     this.usernameInput = page.getByRole('textbox', { name: /name/i }).or(page.locator('input[type="text"]'));
-    this.loginButton = page.getByRole('button', { name: /login|ورود/i });
+    this.loginButton = page.getByRole('button', { name: /log in|login|ورود/i }).and(page.locator('button[type="submit"]'));
     this.createAccountButton = page.getByRole('button', { name: /create account|حساب/i });
     this.themeButton = page.getByTestId('btn-theme');
     this.languageSelect = page.getByTestId('select-language');
+    this.errorMessage = page.locator('.alert--error');
+    this.toggleModeButton = page.getByTestId('btn-switch-mode');
+    this.logoutButton = page.getByRole('button', { name: /Log Out|خروج/i });
   }
 
   async goto() {
@@ -41,7 +46,6 @@ export class LoginPage {
   }
 
   async isUserLoggedIn(): Promise<boolean> {
-    const logoutBtn = this.page.getByRole('button', { name: /logout|خروج/i });
-    return await logoutBtn.isVisible();
+    return await this.logoutButton.isVisible();
   }
 }
